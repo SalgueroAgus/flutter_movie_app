@@ -62,7 +62,7 @@ class Actor {
 
   getFoto() {
     if (profilePath == null) {
-      return 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
+      return 'https://www.indiaspora.org/wp-content/uploads/2018/10/image-not-available.jpg';
     } else {
       return 'https://image.tmdb.org/t/p/w500/$profilePath';
     }
