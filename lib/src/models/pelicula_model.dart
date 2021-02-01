@@ -70,4 +70,12 @@ class Pelicula {
       return 'https://image.tmdb.org/t/p/w500/$posterPath';
     }
   }
+
+  getBackgroundImg() {
+    if (posterPath == null) {
+      return 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
+    } else {
+      return 'https://image.tmdb.org/t/p/w500/$backdropPath';
+    }
+  }
 }
