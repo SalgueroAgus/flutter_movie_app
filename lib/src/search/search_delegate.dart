@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
 
-class DataSearch extends SearchDelegate {
-  final peliculas = [
-    'peli1',
-    'peli2',
-    'peli3',
-    'peli4',
-    'peli5',
-    'peli6',
-    'peli7'
-  ];
+import '../models/pelicula_model.dart';
+import '../providers/peliculas_provider.dart';
 
-  final peliculasRecientes = ['peli1', 'peli2'];
+class DataSearch extends SearchDelegate {
+  final peliculasProvider = new PeliculasProvider();
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -48,20 +41,38 @@ class DataSearch extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     // Sugerencias de busqueda
 
-    final listaSugerida = (query.isEmpty)
-        ? peliculasRecientes
-        : peliculas
-            .where((p) => p.toLowerCase().startsWith(query.toLowerCase()))
-            .toList();
+    if (query.isEmpty) {
+      return Container();
+    }
 
-    return ListView.builder(
-      itemCount: listaSugerida.length,
-      itemBuilder: (context, i) {
-        return ListTile(
-          leading: Icon(Icons.movie),
-          title: Text(listaSugerida[i]),
-          onTap: () {},
-        );
+    return FutureBuilder(
+      future: peliculasProvider.buscarPelicula(query),
+      builder: (BuildContext context, AsyncSnapshot<List<Pelicula>> snapshot) {
+        if (snapshot.hasData) {
+          final peliculas = snapshot.data;
+
+          return ListView(
+            children: peliculas.map((pelicula) {
+              return ListTile(
+                leading: FadeInImage(
+                    image: NetworkImage(pelicula.getPosterImg()),
+                    placeholder: AssetImage('assets/no-image.jpg'),
+                    fit: BoxFit.contain),
+                title: Text(pelicula.title),
+                subtitle: Text(pelicula.releaseDate),
+                onTap: () {
+                  close(context, null);
+                  pelicula.uniqueId = '';
+                  Navigator.pushNamed(context, 'detalle', arguments: pelicula);
+                },
+              );
+            }).toList(),
+          );
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
       },
     );
   }
